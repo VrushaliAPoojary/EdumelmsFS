@@ -17,7 +17,7 @@ export const clerkWebhooks = async (req, res) => {
             case 'user.created':{
                 const userData = {
                     _id: data.id,
-                    email:data.email_address[0].email_address,
+                    email:data.email_addresses[0].email_address,
                     name:data.fir_name + " " + data.last_name,
                     imageUrl: data.image_url,
                 }
@@ -46,7 +46,7 @@ export const clerkWebhooks = async (req, res) => {
         }
 
     } catch (error) {
-        res.jsos({success: false,message: error.message})
+        res.json({success: false,message: error.message})
 
     }
 }
