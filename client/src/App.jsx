@@ -16,24 +16,23 @@ const App = () => {
   return (
     <div>
       <Routes>
-        <Route path='/' element={<Home/>}/>
-        <Route path='/course-list' element={<CourseList/>}/>
-        <Route path='/course-list/:input' element={<CourseList/>}/>
-        <Route path='/course/:id' element={<CourseDetails/>}/>
-        <Route path='/my-enrollments' element={<MyEnrollments/>}/>
-        <Route path='/player/:courseId' element={<Player/>}/>
-        <Route path='/loading/:path' element={<Loading/>}/>
-        <Route path='/educator' element={<Educator/>}>
-             <Route path='educator' element={<Dashboard/>}/>
-             <Route path='add-course' element={<AddCourse/>}/>
-             <Route path='my-courses' element={<MyCourses/>}/>
-             <Route path='student-enrolled' element={<StudentsEnrolled/>}/>
-        
+        {/* Student Routes */}
+        <Route path='/' element={<Home />} />
+        <Route path='/course-list' element={<CourseList />} />
+        <Route path='/course-list/:input' element={<CourseList />} />
+        <Route path='/course/:id' element={<CourseDetails />} />
+        <Route path='/my-enrollments' element={<MyEnrollments />} />
+        <Route path='/player/:courseId' element={<Player />} />
+        <Route path='/loading/:path' element={<Loading />} />
+
+        {/* Educator Routes with nested children */}
+        <Route path='/educator' element={<Educator />}>
+          <Route index element={<Dashboard />} /> {/* Default child at /educator */}
+          <Route path='add-course' element={<AddCourse />} /> {/* /educator/add-course */}
+          <Route path='my-courses' element={<MyCourses />} /> {/* /educator/my-courses */}
+          <Route path='student-enrolled' element={<StudentsEnrolled />} /> {/* /educator/student-enrolled */}
         </Route>
-
-
       </Routes>
-      
     </div>
   )
 }

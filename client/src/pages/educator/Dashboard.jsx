@@ -8,6 +8,7 @@ const Dashboard = () => {
   const [dashboardData, setDashboardData] = useState(null);
 
   const fetchDashboardData = async () => {
+    // Replace this with API call in real case
     setDashboardData(dummyDashboardData);
   };
 
@@ -19,9 +20,11 @@ const Dashboard = () => {
     <div className='min-h-screen flex flex-col items-start justify-between gap-8 md:p-8 md:pb-0 p-4 pt-8 pb-0'>
       <div className='space-y-5'>
 
+        {/* Top Cards */}
         <div className='flex flex-wrap gap-5 items-center'>
+          {/* Total Enrollments */}
           <div className='flex items-center gap-3 shadow-card border border-blue-500 p-4 w-56 rounded-md'>
-            <img src={assets.patients_icon} alt="patients_icon" />
+            <img src={assets.patients_icon} alt="enrollments_icon" className='w-8 h-8' />
             <div>
               <p className='text-2xl font-medium text-gray-600'>
                 {dashboardData.enrolledStudentsData.length}
@@ -30,8 +33,9 @@ const Dashboard = () => {
             </div>
           </div>
 
+          {/* Total Courses */}
           <div className='flex items-center gap-3 shadow-card border border-blue-500 p-4 w-56 rounded-md'>
-            <img src={assets.appointments_icon} alt="appointments_icon" />
+            <img src={assets.appointments_icon} alt="courses_icon" className='w-8 h-8' />
             <div>
               <p className='text-2xl font-medium text-gray-600'>
                 {dashboardData.totalCourses}
@@ -40,8 +44,9 @@ const Dashboard = () => {
             </div>
           </div>
 
+          {/* Total Earnings */}
           <div className='flex items-center gap-3 shadow-card border border-blue-500 p-4 w-56 rounded-md'>
-            <img src={assets.earning_icon} alt="earning_icon" />
+            <img src={assets.earning_icon} alt="earning_icon" className='w-8 h-8' />
             <div>
               <p className='text-2xl font-medium text-gray-600'>
                 {currency}{dashboardData.totalEarnings}
@@ -51,6 +56,7 @@ const Dashboard = () => {
           </div>
         </div>
 
+        {/* Latest Enrollments Table */}
         <div>
           <h2 className='pb-4 text-lg font-medium'>Latest Enrollments</h2>
           <div className='flex flex-col items-center max-w-4xl w-full overflow-hidden rounded-md bg-white border border-gray-500/20'>
@@ -67,10 +73,10 @@ const Dashboard = () => {
                   <tr key={index} className='border-b border-gray-500/20'>
                     <td className='px-4 py-3 text-center hidden sm:table-cell'>{index + 1}</td>
                     <td className='md:px-4 px-2 py-3 flex items-center space-x-3'>
-                      <img src={item.student.imageUrl} alt="Profile" className='w-9 h-9 rounded-full' />
+                      <img src={item.student.imageUrl} alt="Profile" className='w-9 h-9 rounded-full object-cover' />
                       <span className='truncate'>{item.student.name}</span>
                     </td>
-                    <td className='px-4 py-3 truncate'>{item.courseTitle}</td> 
+                    <td className='px-4 py-3 truncate'>{item.courseTitle}</td>
                   </tr>
                 ))}
               </tbody>
@@ -80,7 +86,9 @@ const Dashboard = () => {
 
       </div>
     </div>
-  ) : <Loading />;
+  ) : (
+    <Loading />
+  );
 };
 
 export default Dashboard;

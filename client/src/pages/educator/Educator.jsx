@@ -6,14 +6,16 @@ import Footer from '../../components/educator/Footer'
 
 const Educator = () => {
   return (
-    <div className='text-default min-h-screen bg-white'>
+    <div className='flex flex-col min-h-screen text-default bg-white'>
       <Navbar />
-      <div className='flex'>
+      
+      <div className='flex flex-1'>
         <Sidebar />
         <div className='flex-1'>
-          <Outlet /> {/* ✅ Correct usage */}
+          <Outlet />
         </div>
       </div>
+
       <Footer />
     </div>
   )

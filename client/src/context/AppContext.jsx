@@ -10,19 +10,19 @@ export const AppContextProvider = (props) => {
 
   const currency = import.meta.env.VITE_CURRENCY;
   const navigate = useNavigate();
-  const {getToken} = useAuth();
-  const {user} = useUser();
+  const { getToken } = useAuth();
+  const { user } = useUser();
 
   const [allCourses, setAllCourses] = useState([]);
   const [isEducator, setIsEducator] = useState(true);
   const [enrolledCourses, setEnrolledCourses] = useState([]);
 
-  //fetch all courses
+  // Fetch all courses
   const fetchAllCourses = async () => {
     setAllCourses(dummyCourses);
   };
 
-  //function to calculate average rating of course
+  // Function to calculate average rating of a course
   const calculateRating = (course) => {
     if (!course.courseRatings || course.courseRatings.length === 0) {
       return 0;
@@ -34,25 +34,29 @@ export const AppContextProvider = (props) => {
     return totalRating / course.courseRatings.length;
   };
 
-  // functin to calculate course chapter time
+  // Function to calculate chapter time
   const calculateChapterTime = (chapter) => {
     let time = 0;
     if (!chapter.chapterContent) return '0 mins';
-    chapter.chapterContent.map((lecture) => time += lecture.lectureDuration);
+    chapter.chapterContent.forEach((lecture) => {
+      time += lecture.lectureDuration;
+    });
     return humanizeDuration(time * 60 * 1000, { units: ["h", "m"] });
   };
 
-  // function to calculATE course duration
+  // Function to calculate course duration
   const calculateCourseDuration = (course) => {
     let time = 0;
     if (!course.courseContent) return '0 mins';
-    course.courseContent.map((chapter) =>
-      chapter.chapterContent.map((lecture) => time += lecture.lectureDuration)
-    );
+    course.courseContent.forEach((chapter) => {
+      chapter.chapterContent.forEach((lecture) => {
+        time += lecture.lectureDuration;
+      });
+    });
     return humanizeDuration(time * 60 * 1000, { units: ["h", "m"] });
   };
 
-  // function to calculate no of lectures in the course
+  // Function to calculate number of lectures in the course
   const calculateNoOfLectures = (course) => {
     let totalLectures = 0;
     if (!course.courseContent) return 0;
@@ -64,11 +68,10 @@ export const AppContextProvider = (props) => {
     return totalLectures;
   };
 
-  //fetch user enrolled courses
-
+  // Fetch user enrolled courses
   const fetchUserEnrolledCourses = async () => {
-    setEnrolledCourses(dummyCourses)
-  }
+    setEnrolledCourses(dummyCourses);
+  };
 
   useEffect(() => {
     fetchAllCourses();
@@ -77,14 +80,13 @@ export const AppContextProvider = (props) => {
 
   const logToken = async () => {
     console.log(await getToken());
-  }
+  };
 
-  useEffect(()=>{
-    if(user){
-      logToken()
-
+  useEffect(() => {
+    if (user) {
+      logToken();
     }
-  },[])
+  }, [user]);
 
   const value = {
     currency,

@@ -15,10 +15,10 @@ const Player = () => {
   const [openSections, setOpenSections] = useState({});
   const [playerData, setPlayerData] = useState(null);
 
-  const getCourseData = () => {
+  useEffect(() => {
     const found = enrolledCourses.find(course => course._id === courseId);
     if (found) setCourseData(found);
-  };
+  }, [enrolledCourses, courseId]);
 
   const toggleSection = (index) => {
     setOpenSections((prev) => ({
@@ -27,42 +27,37 @@ const Player = () => {
     }));
   };
 
-  useEffect(() => {
-    getCourseData();
-  }, [enrolledCourses]);
+  const extractYouTubeId = (url) => {
+    // Handles both full and short YouTube links
+    const regex = /(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&?/]+)/;
+    const match = url.match(regex);
+    return match ? match[1] : url;
+  };
 
   return (
     <>
       <div className="p-4 sm:p-10 flex flex-col-reverse md:grid md:grid-cols-2 gap-10 md:px-36">
-        {/* Left column */}
+        
+        {/* Left Column - Course Structure */}
         <div className="text-gray-800">
           <h2 className="text-xl font-semibold">Course Structure</h2>
-
           <div className="pt-5">
             {courseData &&
               courseData.courseContent.map((chapter, index) => (
-                <div
-                  key={index}
-                  className="border border-gray-300 bg-white mb-2 rounded"
-                >
+                <div key={index} className="border border-gray-300 bg-white mb-2 rounded">
                   <div
                     className="flex justify-between items-center px-4 py-3 cursor-pointer select-none"
                     onClick={() => toggleSection(index)}
                   >
                     <div className="flex items-center gap-2">
                       <img
-                        className={`transform transition-transform ${
-                          openSections[index] ? 'rotate-180' : ''
-                        }`}
+                        className={`transition-transform ${openSections[index] ? 'rotate-180' : ''}`}
                         src={assets.down_arrow_icon}
                         alt="arrow icon"
                       />
-                      <p className="font-medium md:text-base text-sm">
-                        {chapter.chapterTitle}
-                      </p>
+                      <p className="font-medium md:text-base text-sm">{chapter.chapterTitle}</p>
                     </div>
-
-                    <p className="text-sm md:text-default">
+                    <p className="text-sm">
                       {chapter.chapterContent.length} lectures.{' '}
                       {calculateChapterTime(chapter)}
                     </p>
@@ -81,10 +76,8 @@ const Player = () => {
                             alt="play icon"
                             className="w-4 h-4 mt-1"
                           />
-
-                          <div className="flex items-center justify-between w-full text-gray-800 text-xs md:text-default">
+                          <div className="flex justify-between w-full text-xs md:text-sm">
                             <p>{lecture.lectureTitle}</p>
-
                             <div className="flex gap-2">
                               {lecture.lectureUrl && (
                                 <p
@@ -100,12 +93,11 @@ const Player = () => {
                                   Watch
                                 </p>
                               )}
-
                               <p>
-                                {humanizeDuration(
-                                  lecture.lectureDuration * 60 * 1000,
-                                  { units: ['h', 'm'] }
-                                )}
+                                {humanizeDuration(lecture.lectureDuration * 60000, {
+                                  units: ['h', 'm'],
+                                  round: true,
+                                })}
                               </p>
                             </div>
                           </div>
@@ -118,39 +110,38 @@ const Player = () => {
           </div>
 
           <div className='flex items-center gap-2 py-3 mt-10'>
-            <h1 className='text-xl font-bold'>
-              Rate this course
-            </h1>
-            <Rating initialRating={0}/>
+            <h1 className='text-xl font-bold'>Rate this course</h1>
+            <Rating initialRating={0} />
           </div>
         </div>
 
-        {/* Right column */}
+        {/* Right Column - Player or Thumbnail */}
         <div className="md:mt-10">
           {playerData ? (
             <div>
               <YouTube
-                videoId={playerData.lectureUrl.split('/').pop()}
+                videoId={extractYouTubeId(playerData.lectureUrl)}
                 iframeClassName="w-full aspect-video"
               />
-              <div className="flex justify-between items-center mt-1">
-                <p>
-                  {playerData.chapter}.{playerData.lecture}{' '}
-                  {playerData.lectureTitle}
+              <div className="flex justify-between items-center mt-2">
+                <p className="font-medium text-sm text-gray-700">
+                  {playerData.chapter}.{playerData.lecture} - {playerData.lectureTitle}
                 </p>
-                <button className="text-blue-600">
+                <button className="text-blue-600 hover:underline text-sm">
                   {false ? 'Completed' : 'Mark Complete'}
                 </button>
               </div>
             </div>
           ) : (
             <img
-              src={courseData ? courseData.courseThumbnail : ''}
+              src={courseData?.courseThumbnail || assets.placeholder}
               alt="Course thumbnail"
+              className="rounded w-full"
             />
           )}
         </div>
       </div>
+
       <Footer />
     </>
   );

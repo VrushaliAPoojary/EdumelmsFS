@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react';
 import uniquid from 'uniqid';
 import Quill from 'quill';
 import { assets } from '../../assets/assets';
@@ -7,7 +7,7 @@ const AddCourse = () => {
   const quillRef = useRef(null);
   const editorRef = useRef(null);
   const [courseTitle, setCourseTitle] = useState('');
-  const [coursePrice, setCourseTprice] = useState(0);
+  const [coursePrice, setCoursePrice] = useState(0);
   const [discount, setDiscount] = useState(0);
   const [image, setImage] = useState(null);
   const [chapters, setChapters] = useState([]);
@@ -22,7 +22,7 @@ const AddCourse = () => {
 
   const handleChapter = (action, chapterId) => {
     if (action === 'add') {
-      const title = prompt('Enter chapter Name');
+      const title = prompt('Enter Chapter Name');
       if (title) {
         const newChapter = {
           chapterId: uniquid(),
@@ -66,7 +66,10 @@ const AddCourse = () => {
         if (chapter.chapterId === currentChapterId) {
           const newLecture = {
             ...lectureDetails,
-            lectureOrder: chapter.chapterContent.length > 0 ? chapter.chapterContent.slice(-1)[0].lectureOrder + 1 : 1,
+            lectureOrder:
+              chapter.chapterContent.length > 0
+                ? chapter.chapterContent.slice(-1)[0].lectureOrder + 1
+                : 1,
             lectureId: uniquid(),
           };
           chapter.chapterContent.push(newLecture);
@@ -118,7 +121,7 @@ const AddCourse = () => {
           <div className='flex flex-col gap-1'>
             <p>Course Price</p>
             <input
-              onChange={(e) => setCourseTprice(e.target.value)}
+              onChange={(e) => setCoursePrice(e.target.value)}
               value={coursePrice}
               type='number'
               placeholder='0'
@@ -129,7 +132,7 @@ const AddCourse = () => {
           <div className='flex md:flex-row flex-col items-center gap-3'>
             <p>Course Thumbnail</p>
             <label htmlFor='thumbnailImage' className='flex items-center gap-3'>
-              <img src={assets.file_upload_icon} alt='' className='p-3 bg-blue-500 rounded' />
+              <img src={assets.file_upload_icon} alt='Upload Icon' className='p-3 bg-blue-500 rounded' />
               <input
                 type='file'
                 id='thumbnailImage'
@@ -137,7 +140,7 @@ const AddCourse = () => {
                 accept='image/*'
                 hidden
               />
-              <img className='max-h-10' src={image ? URL.createObjectURL(image) : ''} alt='' />
+              {image && <img className='max-h-10' src={URL.createObjectURL(image)} alt='Course Thumbnail' />}
             </label>
           </div>
         </div>
@@ -165,7 +168,7 @@ const AddCourse = () => {
                     onClick={() => handleChapter('toggle', chapter.chapterId)}
                     src={assets.dropdown_icon}
                     width={14}
-                    alt=''
+                    alt='Toggle Chapter'
                     className={`mr-2 cursor-pointer transition-all ${chapter.collapsed ? '-rotate-90' : ''}`}
                   />
                   <span className='font-semibold'>
@@ -176,7 +179,7 @@ const AddCourse = () => {
                 <img
                   onClick={() => handleChapter('remove', chapter.chapterId)}
                   src={assets.cross_icon}
-                  alt=''
+                  alt='Remove Chapter'
                   className='cursor-pointer'
                 />
               </div>
@@ -186,14 +189,14 @@ const AddCourse = () => {
                     <div key={lectureIndex} className='flex justify-between items-center mb-2'>
                       <span>
                         {lectureIndex + 1} {lecture.lectureTitle} - {lecture.lectureDuration} mins -{' '}
-                        <a href={lecture.lectureUrl} target='_blank' rel='noreferrer' className='text-blue-500'>
+                        <a href={lecture.lectureUrl} target='_blank' rel='noopener noreferrer' className='text-blue-500'>
                           Link
                         </a>{' '}
                         - {lecture.isPreviewFree ? 'Free Preview' : 'Paid'}
                       </span>
                       <img
                         src={assets.cross_icon}
-                        alt=''
+                        alt='Remove Lecture'
                         onClick={() => handleLecture('remove', chapter.chapterId, lectureIndex)}
                         className='cursor-pointer'
                       />
@@ -215,6 +218,7 @@ const AddCourse = () => {
           >
             + Add Chapter
           </div>
+
           {showPopup && (
             <div className='fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50'>
               <div className='bg-white text-gray-700 p-4 rounded relative w-full max-w-80'>
@@ -274,7 +278,7 @@ const AddCourse = () => {
                   onClick={() => setShowPopup(false)}
                   src={assets.cross_icon}
                   className='absolute top-4 right-4 w-4 cursor-pointer'
-                  alt=''
+                  alt='Close'
                 />
               </div>
             </div>
