@@ -6,20 +6,31 @@ import humanizeDuration from 'humanize-duration';
 import YouTube from 'react-youtube';
 import Footer from '../../components/student/Footer';
 import Rating from '../../components/student/Rating';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const Player = () => {
-  const { enrolledCourses, calculateChapterTime } = useContext(AppContext);
+  const { enrolledCourses, calculateChapterTime, backendUrl, getToken, userData,fetchUserEnrolledCourses } = useContext(AppContext);
   const { courseId } = useParams();
 
   const [courseData, setCourseData] = useState(null);
   const [openSections, setOpenSections] = useState({});
   const [playerData, setPlayerData] = useState(null);
+  const [progressData, setProgressData] = useState(null)
+  const [initialRating, setInitialRating] = useState(0)
 
-  useEffect(() => {
-    const found = enrolledCourses.find(course => course._id === courseId);
-    if (found) setCourseData(found);
-  }, [enrolledCourses, courseId]);
-
+ const getCourseData = ()=>{
+  enrolledCourses.map((course)=>{
+    if(course._id === courseId){
+      setCourseData(course)
+      course.courseRatings.map((item)=>{
+        if(item.userId === userData._id){
+          setInitialRating(item.rating)
+        }
+      })
+    }
+  })
+ }
   const toggleSection = (index) => {
     setOpenSections((prev) => ({
       ...prev,
@@ -27,12 +38,38 @@ const Player = () => {
     }));
   };
 
-  const extractYouTubeId = (url) => {
-    // Handles both full and short YouTube links
-    const regex = /(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&?/]+)/;
-    const match = url.match(regex);
-    return match ? match[1] : url;
-  };
+  useEffect(()=>{
+    if(enrolledCourses.length > 0){
+      getCourseData()
+    }
+  }, [enrolledCourses])
+
+  const markLectureAsCompleted = async (lectureId)=>{
+    try {
+      const token = await getToken();
+      const {data} = await axios.post(backendUrl + '/api/user/update-course-progress', {courseId, lectureId}, {headers: {Authorization: `Bearer ${token}`}});
+      if(data.success){
+        toast.success(data.message)
+      }else{
+        toast.error(data.message)
+      }
+    } catch (error) {
+      toast.error(error.message)
+    }
+  }
+  const getCourseProgress = async ()=>{
+    try {
+      const token = await getToken();
+      const {data} = await axios.post(backendUrl + '/api/user/get-course-progress',{courseId}, {headers: {Authorization: `Bearer ${token}`}});
+      if(data.success){
+        setProgressData(data.progress)
+      }else{
+        toast.error(data.message)
+      }
+    } catch (error) {
+      toast.error(error.message)
+    }
+  }
 
   return (
     <>

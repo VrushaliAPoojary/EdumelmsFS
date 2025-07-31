@@ -6,6 +6,8 @@ import { assets } from '../../assets/assets';
 import humanizeDuration from 'humanize-duration';
 import Footer from '../../components/student/Footer';
 import YouTube from 'react-youtube';
+import { toast } from 'react-toastify';
+import axios from 'axios'; // ✅ MISSING IMPORT FIXED
 
 const CourseDetails = () => {
   const { id } = useParams();
@@ -21,16 +23,61 @@ const CourseDetails = () => {
     calculateCourseDuration,
     calculateChapterTime,
     currency,
+    backendUrl,
+    userData,
+    getToken
   } = useContext(AppContext);
 
   const fetchCourseData = async () => {
-    const findCourse = allCourses.find((course) => course._id === id);
-    setCourseData(findCourse);
+    try {
+      const { data } = await axios.get(`${backendUrl}/api/course/${id}`);
+      if (data.success) {
+        setCourseData(data.courseData);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
+  const enrollCourse = async () => {
+    try {
+      if (!userData) {
+        return toast.warn('Please login to enroll course');
+      }
+      if (isAlreadyEnrolled) {
+        return toast.warn('You are already enrolled in this course');
+      }
+      const token = await getToken();
+      const { data } = await axios.post(
+        `${backendUrl}/api/user/purchase`,
+        { courseId: courseData._id },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (data.success) {
+        window.location.replace(data.session_url);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
   };
 
   useEffect(() => {
-    if (allCourses.length) fetchCourseData();
-  }, [allCourses, id]);
+    fetchCourseData();
+  }, []);
+
+  useEffect(() => {
+    if (
+      userData &&
+      courseData &&
+      Array.isArray(userData.enrolledCourses) // ✅ FIXED GUARD FOR includes()
+    ) {
+      setIsAlreadyEnrolled(userData.enrolledCourses.includes(courseData._id));
+    }
+  }, [userData, courseData]);
 
   const toggleSection = (index) => {
     setOpenSections((prev) => ({
@@ -71,17 +118,17 @@ const CourseDetails = () => {
               ))}
             </div>
             <p className="text-blue-600">
-              {courseData.courseRatings.length}{" "}
-              {courseData.courseRatings.length > 1 ? "ratings" : "rating"}
+              {courseData.courseRatings.length}{' '}
+              {courseData.courseRatings.length > 1 ? 'ratings' : 'rating'}
             </p>
             <p>
-              {courseData.enrolledStudents.length}{" "}
-              {courseData.enrolledStudents.length > 1 ? "students" : "student"}
+              {courseData.enrolledStudents.length}{' '}
+              {courseData.enrolledStudents.length > 1 ? 'students' : 'student'}
             </p>
           </div>
 
           <p>
-            Course by <span className="text-blue-600 underline">VrushaliAPoojary</span>
+            Course by <span className="text-blue-600 underline">{courseData.educator.name}</span>
           </p>
 
           {/* Course Structure */}
@@ -99,7 +146,7 @@ const CourseDetails = () => {
                   >
                     <div className="flex items-center gap-2">
                       <img
-                        className={`transform transition-transform ${openSections[index] ? "rotate-180" : ""}`}
+                        className={`transform transition-transform ${openSections[index] ? 'rotate-180' : ''}`}
                         src={assets.down_arrow_icon}
                         alt="arrow icon"
                       />
@@ -110,7 +157,7 @@ const CourseDetails = () => {
                     </p>
                   </div>
 
-                  <div className={`overflow-hidden transition-all duration-300 ${openSections[index] ? "max-h-96" : "max-h-0"}`}>
+                  <div className={`overflow-hidden transition-all duration-300 ${openSections[index] ? 'max-h-96' : 'max-h-0'}`}>
                     <ul className="list-disc md:pl-10 pl-4 pr-4 py-2 text-gray-600 border-t border-gray-300">
                       {chapter.chapterContent.map((lecture, i) => (
                         <li key={i} className="flex items-start gap-2 py-1">
@@ -198,7 +245,7 @@ const CourseDetails = () => {
               </div>
             </div>
 
-            <button className="md:mt-6 mt-4 w-full py-3 rounded bg-blue-600 text-white font-medium">
+            <button onClick={enrollCourse} className="md:mt-6 mt-4 w-full py-3 rounded bg-blue-600 text-white font-medium">
               {isAlreadyEnrolled ? "Already Enrolled" : "Enroll Now"}
             </button>
 
