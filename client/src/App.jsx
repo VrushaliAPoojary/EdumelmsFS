@@ -13,12 +13,14 @@ import StudentsEnrolled from './pages/educator/StudentsEnrolled';
 import Dashboard from './pages/educator/Dashboard';
 import Navbar from './components/student/Navbar'; // Student navbar
 import "quill/dist/quill.snow.css";
+ import { ToastContainer} from 'react-toastify';
 
 const App = () => {
   const isEducatorRoute = useMatch('/educator/*');
 
   return (
     <div className='text-default min-h-screen bg-white'>
+      <ToastContainer />
       {/* ✅ Show student Navbar on all non-educator pages */}
       {!isEducatorRoute && <Navbar />}
 
