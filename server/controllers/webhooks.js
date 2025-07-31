@@ -20,7 +20,7 @@ export const clerkWebhooks = async (req, res) => {
         const userData = {
           _id: data.id,
           email: data.email_addresses[0].email_address,
-          name: data.first_name + " " + data.last_name, // fixed: fir_name ➝ first_name
+          name: data.first_name + " " + data.last_name, 
           imageUrl: data.image_url,
         };
         await User.create(userData);
@@ -69,7 +69,7 @@ export const stripeWebhooks = async (request, response) => {
   } catch (err) {
     return response
       .status(400)
-      .send(`Webhook Error: ${err.message}`); // fixed template string and return
+      .send(`Webhook Error: ${err.message}`); 
   }
 
   // Handle the event
