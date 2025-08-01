@@ -1,17 +1,14 @@
 import mongoose from 'mongoose';
 
-// Connect to MongoDB database
 const connectDB = async () => {
   try {
     mongoose.connection.on('connected', () => console.log('Database Connected'));
 
-    await mongoose.connect(`${process.env.MONGODB_URI}/edumelms`, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    // Removed deprecated options useNewUrlParser and useUnifiedTopology
+    await mongoose.connect(`${process.env.MONGODB_URI}/edumelms`);
   } catch (error) {
     console.error('MongoDB connection error:', error.message);
-    process.exit(1); // Exit process with failure
+    process.exit(1);
   }
 };
 
